@@ -182,10 +182,12 @@ body {
 
 .modal-content {
   background-color: #dfd5c3;
-  padding: 2vmin;
+  padding: 6vmin;
   display: flex;
   flex-direction: column;
   border-radius: 1vmin;
+
+  position: relative;
 }
 
 .close-modal {
@@ -193,7 +195,10 @@ body {
   color: #2F343B;
   align-self: flex-end;
   height: fit-content;
-  margin: 0 0 16px;
+
+  position: absolute;
+  top: 1vmin;
+  right: 2vmin;
 
   transition: all 0.3s;
 }
@@ -225,7 +230,7 @@ body {
 }
 
 .winner-content {
-  padding: 10vmin 10vmin 20vmin;
+  padding: 20vmin;
   background-color: #ddafa3;
 }
 
@@ -240,7 +245,7 @@ body {
 
 .info-content {
   max-width: 70vw;
-  padding: 2vmin 6vmin 6vmin;
+  padding: 6vmin;
 }
 
 .info-message {

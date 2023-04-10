@@ -63,10 +63,14 @@ closeModalWinner.addEventListener('click', () => {
 });
 moreInfo.addEventListener('click', () => {
   modalInfo.style.display = 'flex';
-})
+});
 closeModalInfo.addEventListener('click', () => {
   modalInfo.style.display = 'none';
-})
+});
+
+scoreAmount.addEventListener('transitionend', () => scoreAmount.style.removeProperty('--scale-score'));
+scoreValue.addEventListener('animationend', () => scoreValue.classList.remove('added-score'));
+bestScore.addEventListener('transitionend', () => bestScore.style.removeProperty('--scale-score'));
 
 function handleClick() {
   scoreAmount.textContent = 0;
@@ -272,8 +276,4 @@ function getScore() {
   }
 
   grid.cells.forEach(cell => cell.addedValue = 0);
-
-  scoreAmount.addEventListener('transitionend', () => scoreAmount.style.removeProperty('--scale-score'));
-  scoreValue.addEventListener('animationend', () => scoreValue.classList.remove('added-score'));
-  bestScore.addEventListener('transitionend', () => bestScore.style.removeProperty('--scale-score'));
 }
