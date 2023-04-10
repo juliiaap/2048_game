@@ -59,6 +59,7 @@ class Cell {
   #tile;
   #mergeTile;
   #score;
+  #addedValue;
 
   constructor(cellElement, x, y) {
     this.#cellElement = cellElement;
@@ -105,11 +106,23 @@ class Cell {
   }
 
   set score(value) {
-    if (this.#score == null) {
+    if (!this.#score || !value) {
       this.#score = 0;
     }
 
     this.#score = this.#score + value;
+  }
+
+  get addedValue() {
+    return this.#addedValue;
+  }
+
+  set addedValue(value) {
+    if (!this.#addedValue || !value) {
+      this.#addedValue = 0;
+    }
+
+    this.#addedValue = value;
   }
 
   canAcceptTile(tile) {
@@ -124,6 +137,7 @@ class Cell {
 
     this.tile.value = this.tile.value + this.mergeTile.value;
     this.score = this.tile.value;
+    this.addedValue = this.tile.value;
     this.mergeTile.remove();
     this.mergeTile = null;
   }

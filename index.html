@@ -5,28 +5,78 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <link rel="icon" href="/img/2048_logo.svg.png" type="image/x-icon">
   <link rel="stylesheet" href="styles.css">
   <script src="script.js" type="module"></script>
 </head>
 <body>
   <div class="game-field">
     <div class="game-info">
-      <div class="button-container">
-        <button type="button" class="try-again-button">
-          Try again
+      <div class="more-info-container">
+        <button id="more-info" class="more-info">
+          i
         </button>
       </div>
 
       <h1 class="main-title">2048</h1>
 
-      <div class="game-score">
+      <div id="score-value" class="game-score">
         <p class="score-title">Score</p>
 
-        <div class="score-amount"></div>
+        <div id="score-amount" class="score-amount score-animation"></div>
+      </div>
+
+      <div id="best-value" class="game-score">
+        <p class="score-title">Best</p>
+
+        <div id="best-score" class="score-amount score-animation"></div>
+      </div>
+
+      <div class="button-container">
+        <button type="button" id="try-again" class="try-again-button">
+          Try again
+        </button>
       </div>
     </div>
 
     <div id="game-board"></div>
+
+    <div id="modalWindow" class="modal">
+      <div class="modal-content">
+        <span id="close-modal" class="close-modal">&times;</span>
+
+        <p class="modal-message">Game over! Restart the game?</p>
+
+        <div class="button-container">
+          <button type="button" id="modal-try-again" class="try-again-button modal-try-again">
+            Try again
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modalWinner" class="modal winner">
+      <div class="modal-content winner-content">
+        <span id="close-modal-winner" class="close-modal close-modal-winner">&times;</span>
+
+        <p class="modal-message winner-message">You win! Congratulations!</p>
+      </div>
+    </div>
+
+    <div id="modalInfo" class="modal info">
+      <div class="modal-content info-content">
+        <span id="close-modal-info" class="close-modal close-modal-info">&times;</span>
+
+        <p class="modal-message info-message">
+          <strong>
+            HOW TO PLAY:<br>
+          </strong>
+          Use your arrow keys to move the tiles.<br>
+          Tiles with the same number merge into one when they touch.<br>
+          Add them up to reach 2048!
+        </p>
+      </div>
+    </div>
   </div>
 </body>
 </html>

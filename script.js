@@ -1,9 +1,21 @@
 import Grid from './Grid.js';
 import Tile from './Tile.js';
 
-const gameBoard = document.getElementById("game-board");
-const scoreAmount = document.querySelector('.score-amount');
-const tryAgain = document.querySelector('.try-again-button');
+const gameBoard = document.getElementById('game-board');
+const scoreAmount = document.getElementById('score-amount');
+const tryAgain = document.getElementById('try-again');
+const modalTryAgain = document.getElementById('modal-try-again');
+const bestScore = document.getElementById('best-score');
+const scoreValue = document.getElementById('score-value');
+const modalWindow = document.getElementById('modalWindow');
+const modalWinner = document.getElementById('modalWinner');
+const modalInfo = document.getElementById('modalInfo');
+const closeModal = document.getElementById('close-modal');
+const closeModalWinner = document.getElementById('close-modal-winner');
+const closeModalInfo = document.getElementById('close-modal-info');
+const moreInfo = document.getElementById('more-info');
+
+let modalWinnerShown = false;
 
 const grid = new Grid(gameBoard);
 
@@ -16,21 +28,58 @@ function setupInput() {
     scoreAmount.textContent = 0;
   }
 
+  if (!bestScore.textContent.length) {
+    bestScore.textContent = 0;
+  }
+
   window.addEventListener('keydown', handleInput, { once: true });
 }
 
 tryAgain.addEventListener('click', handleClick);
+modalTryAgain.addEventListener('click', () => {
+  modalWindow.style.display = 'none';
+  handleClick();
+});
+closeModal.addEventListener('click', () => {
+  modalWindow.style.display = 'none';
+})
+window.addEventListener('click', (event) => {
+  if (event.target === modalWindow) {
+    modalWindow.style.display = 'none';
+  }
+
+  if (event.target === modalWinner) {
+    modalWinner.style.display = 'none';
+    setupInput();
+  }
+
+  if (event.target === modalInfo) {
+    modalInfo.style.display = 'none';
+  }
+});
+closeModalWinner.addEventListener('click', () => {
+  modalWinner.style.display = 'none';
+  setupInput();
+});
+moreInfo.addEventListener('click', () => {
+  modalInfo.style.display = 'flex';
+})
+closeModalInfo.addEventListener('click', () => {
+  modalInfo.style.display = 'none';
+})
 
 function handleClick() {
   scoreAmount.textContent = 0;
 
-  grid.cells.forEach(cell => cell.removeTile());
+  grid.cells.forEach(cell => {
+    cell.removeTile();
+    cell.score = 0;
+  });
 
   grid.randomEmptyCell().tile = new Tile(gameBoard);
   grid.randomEmptyCell().tile = new Tile(gameBoard);
 
-  // newGame();
-  // setupInput();
+  setupInput();
 }
 
 async function handleInput(e) {
@@ -85,13 +134,28 @@ async function handleInput(e) {
 
   if (!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()) {
     newTile.waitForTransition(true).then(() => {
-      alert('You lose');
+      modalWindow.style.display = 'flex';
     })
 
     return;
   }
 
-  setupInput();
+  const filledTiles = grid.cells.map(cell => {
+    if (cell.tile) {
+      return cell.tile.value;
+    }
+    
+    return;
+  });
+
+  if (!filledTiles.some(value => value === 2048) || modalWinnerShown) {
+    setupInput();
+  }
+
+  if (filledTiles.some(value => value === 2048) && !modalWinnerShown) {
+    modalWinner.style.display = 'flex';
+    modalWinnerShown = true;
+  };
 }
 
 function moveUp() {
@@ -131,7 +195,7 @@ function slideTiles(cells) {
       }
 
       if (lastValidCell != null) {
-        promises.push(cell.tile.waitForTransition())
+        promises.push(cell.tile.waitForTransition());
 
         if (lastValidCell.tile != null) {
           lastValidCell.mergeTile = cell.tile;
@@ -142,6 +206,8 @@ function slideTiles(cells) {
         cell.tile = null;
       }
     }
+
+    return promises;
   }))
 }
 
@@ -177,16 +243,37 @@ function canMove(cells) {
 
 function getScore() {
   const scoresArray = grid.cells.map(cell => cell.score)
-    .filter(score => !!score)
+    .filter(score => !!score);
+
+  const addedValueArray = grid.cells.map(cell => cell.addedValue)
+    .filter(value => !!value);
 
   let score;
+  let addedValue;
 
   if (!!scoresArray.length) {
     score = scoresArray.reduce((prev, current) => prev + current);
   }
+
+  if (!!addedValueArray.length) {
+    addedValue = addedValueArray.reduce((prev, curr) => prev + curr);
+  }
   
   if (score > 0 && +scoreAmount.textContent < score) {
     scoreAmount.textContent = score;
-    scoreAmount.classList.add('score-animation');
+    scoreAmount.style.setProperty('--scale-score', 1.5);
+    scoreValue.style.setProperty('--score', `${addedValue}`);
+    scoreValue.classList.add('added-score');
   }
+
+  if (+bestScore.textContent < +scoreAmount.textContent) {
+    bestScore.textContent = score;
+    bestScore.style.setProperty('--scale-score', 1.5);
+  }
+
+  grid.cells.forEach(cell => cell.addedValue = 0);
+
+  scoreAmount.addEventListener('transitionend', () => scoreAmount.style.removeProperty('--scale-score'));
+  scoreValue.addEventListener('animationend', () => scoreValue.classList.remove('added-score'));
+  bestScore.addEventListener('transitionend', () => bestScore.style.removeProperty('--scale-score'));
 }
