@@ -129,8 +129,8 @@ body {
 }
 
 .score-animation {
-  transform: scale(var(--scale-score));
-  transition: transform 100ms ease-in-out;
+  transform: scale(1);
+  animation: transform 200ms ease-in-out;
 }
 
 #game-board {
@@ -235,6 +235,8 @@ body {
 }
 
 .close-modal-winner {
+  top: 10vmin;
+  right: 10vmin;
   transform: translate(5.5vmin, -7.5vmin);
 }
 
@@ -263,7 +265,7 @@ body {
 @keyframes score {
   0% {
     opacity: 0;
-    transform: scale(1), translate(0, 0);
+    transform: translate(0, 0);
   }
 
   50% {
@@ -272,6 +274,12 @@ body {
 
   100% {
     opacity: 0;
-    transform: scale(1) translate(0.5vmin, -1.5vmin);
+    transform: translate(0.5vmin, -1.5vmin);
+  }
+}
+
+@keyframes transform {
+  50% {
+    transform: scale(1.5);
   }
 }

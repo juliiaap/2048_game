@@ -32,6 +32,10 @@ function setupInput() {
     bestScore.textContent = 0;
   }
 
+  scoreAmount.addEventListener('animationend', () => scoreAmount.classList.remove('score-animation'), { once: true });
+  scoreValue.addEventListener('animationend', () => scoreValue.classList.remove('added-score'), { once: true });
+  bestScore.addEventListener('animationend', () => bestScore.classList.remove('score-animation'), { once: true });
+
   window.addEventListener('keydown', handleInput, { once: true });
 }
 
@@ -67,10 +71,6 @@ moreInfo.addEventListener('click', () => {
 closeModalInfo.addEventListener('click', () => {
   modalInfo.style.display = 'none';
 });
-
-scoreAmount.addEventListener('transitionend', () => scoreAmount.style.removeProperty('--scale-score'));
-scoreValue.addEventListener('animationend', () => scoreValue.classList.remove('added-score'));
-bestScore.addEventListener('transitionend', () => bestScore.style.removeProperty('--scale-score'));
 
 function handleClick() {
   scoreAmount.textContent = 0;
@@ -137,9 +137,14 @@ async function handleInput(e) {
   grid.randomEmptyCell().tile = newTile;
 
   if (!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()) {
-    newTile.waitForTransition(true).then(() => {
+    Promise.all([
+      newTile.waitForTransition(true),
+      waitForAnimation(scoreAmount, 'score-animation'),
+      waitForAnimation(scoreValue, 'added-score'),
+      waitForAnimation(bestScore, 'score-animation'),
+    ]).then(() => {
       modalWindow.style.display = 'flex';
-    })
+    });
 
     return;
   }
@@ -157,8 +162,14 @@ async function handleInput(e) {
   }
 
   if (filledTiles.some(value => value === 2048) && !modalWinnerShown) {
-    modalWinner.style.display = 'flex';
-    modalWinnerShown = true;
+    Promise.all([
+      waitForAnimation(scoreAmount, 'score-animation'),
+      waitForAnimation(scoreValue, 'added-score'),
+      waitForAnimation(bestScore, 'score-animation'),
+    ]).then(() => {
+      modalWinner.style.display = 'flex';
+      modalWinnerShown = true;
+    });
   };
 }
 
@@ -265,15 +276,25 @@ function getScore() {
   
   if (score > 0 && +scoreAmount.textContent < score) {
     scoreAmount.textContent = score;
-    scoreAmount.style.setProperty('--scale-score', 1.5);
+    scoreAmount.classList.add('score-animation');
     scoreValue.style.setProperty('--score', `${addedValue}`);
     scoreValue.classList.add('added-score');
   }
 
   if (+bestScore.textContent < +scoreAmount.textContent) {
     bestScore.textContent = score;
-    bestScore.style.setProperty('--scale-score', 1.5);
+    bestScore.classList.add('score-animation');
   }
 
   grid.cells.forEach(cell => cell.addedValue = 0);
+}
+
+function waitForAnimation(element, value) {
+  return new Promise(resolve => {
+    element.addEventListener(
+      'animationend',
+      resolve(element.classList.remove(value)),
+      { once: true },
+    )
+  })
 }
